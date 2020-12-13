@@ -1,0 +1,66 @@
+---
+title: "Reproducible Pitch Presentation"
+author: "A. Rodríguez"
+date: "13/12/2020"
+output: ioslides_presentation
+---
+
+## Previous projects featuring the dataset
+
+### Statistical Inference Week 4 Assignment (Part 2)  
+
+- Can be checked here: 
+[Tooth growth analysis](https://coursera-assessments.s3.amazonaws.com/assessments/1600715936181/e1571097-8fd5-4162-8c44-b294cc4d74b7/Part%202%20-%20Basic-Inferential-Data-Analysis.pdf).
+
+
+
+### Developing Data Products Week 4 Assignment (Shiny Application)
+- Link to github repository:
+[CourseApp](https://github.com/alroru95/Developing-data-products/tree/main/CourseApp).
+
+
+## Dataset Details
+
+### The Effect of Vitamin C on Tooth Growth in Guinea Pigs
+
+- Description: The response is the length of odontoblasts (cells responsible for tooth growth) in 60 guinea pigs. Each animal received one of three dose levels of vitamin C (0.5, 1, and 2 mg/day) by one of two delivery methods, orange juice or ascorbic acid (a form of vitamin C and coded as VC).
+
+- Format: A data frame with 60 observations on 3 variables.
+
+
+- Source: C. I. Bliss (1952). The Statistics of Bioassay. Academic Press.
+
+- References: McNeil, D. R. (1977). Interactive Data Analysis. New York: Wiley. //
+Crampton, E. W. (1947). The growth of the odontoblast of the incisor teeth as a criterion of vitamin C intake of the guinea pig. The Journal of Nutrition, 33(5), 491–504. doi: 10.1093/jn/33.5.491.
+
+## First glimpse of dataset
+
+```{r dataset}
+head(ToothGrowth)
+```
+
+- [,1]	len	(numeric): Tooth length.
+- [,2]	supp (factor): Supplement type (VC or OJ).
+- [,3]	dose (numeric):	Dose in milligrams/day
+
+
+
+## Embedded R Code (Boxplot and fit model)
+
+```{r server, message=FALSE}
+library(shiny); library(datasets); library(ggpubr)
+toothData <- ToothGrowth
+shinyServer(function(input, output) {
+    formulaTextPoint <- reactive
+    ({paste("len ~", "as.integer(", input$variable, ")")})
+    fit <- reactive
+    ({lm(as.formula(formulaTextPoint()), data=toothData)})
+    output$toothBoxPlot <- renderPlot
+    ({boxplot(as.formula(formulaText()), data = toothData)})
+    output$fit <- renderPrint({summary(fit())})
+    output$toothPlot <- renderPlot({with(toothData, {
+            plot(as.formula(formulaTextPoint()))
+            abline(fit(), col=2)})
+    })
+})
+```
